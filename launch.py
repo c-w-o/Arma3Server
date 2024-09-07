@@ -103,13 +103,13 @@ def link_it(what, to, silent=False):
         logwarning("{} exists, cannot link {}".format(to, what))
 
 def copy_key(moddir, keyfolder, steamid, dispname=""):
-    keys = glob.glob(os.path.join(moddir, "**/*.bikey"))
+    keys = glob.glob(os.path.join(moddir, "**/*.bikey"), recursive=True)
     if len(keys) > 0:
         for key in keys:
             if not os.path.isdir(key):
                 shutil.copy2(key, keyfolder+os.sep+steamid+"_"+os.path.basename(key))
     else:
-        logwarning("Missing keys: {} ({})".format(moddir, dispname))
+        logwarning("Missing keys: {} ({}), {}: {}".format(moddir, dispname, os.path.join(moddir, "**/*.bikey"), keys))
         
 def fix_folder_characters(path):
     for subdir, dirs, files in os.walk(path):
