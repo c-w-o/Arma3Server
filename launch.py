@@ -38,7 +38,7 @@ WORKSHOP_DIR="/tmp"+os.sep+"steamapps/workshop/content/107410"+os.sep
 # 2. /tmp/workshop/.../mods/xxx Ornder von this-server und common-server hierher linken
 #                                      fehlende order in common-server anlegen und linken
 # 
-
+CLIENT_MOD_LIST=[]
 NEW_MOD_LIST=[]
 NEW_SRVMOD_LIST=[]
 NEW_MAPS_LIST=[]
@@ -227,6 +227,7 @@ def parse_json_config(): # bool
     global NEW_SRVMOD_LIST
     global NEW_MOD_LIST
     global NEW_MAPS_LIST
+    global CLIENT_MOD_LIST
 
     jconfig=None
     if os.path.exists(JSON_CONFIG):
@@ -279,6 +280,12 @@ def parse_json_config(): # bool
                     else:
                         for i in range(len(NEW_MOD_LIST)):
                             NEW_MOD_LIST[i][0]=NEW_MOD_LIST[i][0].replace(":","-").replace("/","_").replace("\\","_").rstrip(".,")
+                            
+                if "client-side-mods" in active_jc:
+                    CLIENT_MOD_LIST=active_jc["client-side-mods"]
+                    for i in range(len(CLIENT_MOD_LIST)):
+                        CLIENT_MOD_LIST[i][0]=CLIENT_MOD_LIST[i][0].replace(":","-").replace("/","_").replace("\\","_").rstrip(".,")
+                            
                 if "maps" in active_jc:
                     NEW_MAPS_LIST=active_jc["maps"]
                     r,NEW_MAPS_LIST=check_double_mods(NEW_MAPS_LIST)
@@ -354,6 +361,18 @@ def link_external_share_with_workshop(): # bool
     pub_mod_path=COMMON_SHARE_ARMA_ROOT+os.sep+"mods"+os.sep
     lognotice("workshop - mods: {}".format(NEW_MOD_LIST))
     for dispname, steamid in NEW_MOD_LIST:
+        if os.path.exists(priv_mod_path+steamid):
+            link_mods.append([dispname, priv_mod_path+steamid, WORKSHOP_DIR+os.sep+steamid])
+        elif not os.path.exists(pub_mod_path+steamid):
+            os.makedirs(pub_mod_path+steamid)
+            with open(pub_mod_path+steamid+"_@"+dispname, "w") as f:
+                f.write("")
+            link_mods.append([dispname, pub_mod_path+steamid, WORKSHOP_DIR+os.sep+steamid])
+        else:
+            link_mods.append([dispname, pub_mod_path+steamid, WORKSHOP_DIR+os.sep+steamid])
+        workshop_download.append([dispname, steamid])
+    
+    for dispname, steamid in CLIENT_MOD_LIST:
         if os.path.exists(priv_mod_path+steamid):
             link_mods.append([dispname, priv_mod_path+steamid, WORKSHOP_DIR+os.sep+steamid])
         elif not os.path.exists(pub_mod_path+steamid):
