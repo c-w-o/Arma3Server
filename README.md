@@ -45,7 +45,8 @@ An Arma 3 Dedicated Server. Updates to the latest version every time it is resta
         -p 2306:2306/udp \
         -v arma3/server-0:/var/run/share/arma3/this-server \
         -v arma3/server-common:/var/run/share/arma3/server-common \
-        -e ARMA_CONFIG=server.cfg \
+        -e ARMA_CONFIG=main.cfg \
+        -e PARAM_CONFIG=parameter.cfg \
         -e BASIC_CONFIG=basic.cfg \
         -e STEAM_USER=myusername \
         -e STEAM_PASSWORD=mypassword \
@@ -83,13 +84,14 @@ Profiles are saved in `/arma3/configs/profiles`
 | `-v /arma3/servermods`        | Mods that will only be loaded by the server |
 | `-e PORT`                     | Port used by the server, (uses PORT to PORT+3)            | 2302 |
 | `-e ARMA_BINARY`              | Arma 3 server binary to use, `./arma3server_x64` for x64   | `./arma3server` |
-| `-e ARMA_CONFIG`              | Config file to load from `/arma3/configs`                 | `server.cfg` |
+| `-e ARMA_CONFIG`              | Config file to load from `/arma3/configs`                 | `main.cfg` |
 | `-e BASIC_CONFIG`             | Server speed config file to load from `/arma3/configs`    | `basic.cfg` |
 | `-e ARMA_PARAMS`              | Additional Arma CLI parameters |
 | `-e ARMA_PROFILE`             | Profile name, stored in `/arma3/configs/profiles`         | `main` |
 | `-e ARMA_WORLD`               | World to load on startup                                  | `empty` |
 | `-e ARMA_LIMITFPS`            | Maximum FPS | `120` |
 | `-e ARMA_CDLC`                | cDLCs to load |
+| `-e PARAM_CONFIG`             | network settings, difficulty |                            | `parameter.cfg` |
 | `-e STEAM_BRANCH`             | Steam branch used by steamcmd | `public` |
 | `-e STEAM_BRANCH_PASSWORD`    | Steam branch password used by steamcmd |
 | `-e STEAM_USER`               | Steam username used to login to steamcmd |
