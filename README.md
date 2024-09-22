@@ -9,8 +9,9 @@ An Arma 3 Dedicated Server. Updates to the latest version every time it is resta
     + scripts
     + server-0
     |    + config
-    |    |    + server.cfg
-    |    |    + mods.html
+    |    |    + main.cfg
+    |    |    + parameter.cfg
+    |    |    + server.json
     |    |    + profiles
     |    + logs
     |    + mods
@@ -23,6 +24,7 @@ An Arma 3 Dedicated Server. Updates to the latest version every time it is resta
     |         + cba_settings.sqf
     + server-common
          + dlcs
+         + maps
          + mods
          + basic.cfg
 
