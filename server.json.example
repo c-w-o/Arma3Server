@@ -1,30 +1,13 @@
 {
-    "config-name":"full-creator",
-    
+    "config-name":"old_antistasi",
+    "debug_skip_install": false,
     "configs":{
-        "full-creator": {
-            "mod-config-file":"mods.html",
-            "server-config-file": "server.cfg",
-            "server-parameters" : "-autoInit -bandwidthAlg=2",
-            
-            "num-headless": 2,
-            
-            "creator-dlc": {
-                "enable-creator": true,
-                "csla-iron-curtain": true,
-                "global-mobilization-cold-war": true,
-                "s.o.g.-prairie-fire": true,
-                "western-sahara": true,
-                "spearhead-1944": true
-            }
-            
-        },
-        "standard-mods_v10.html": {
+        "only_rhs": {
             "mod-config-file":"Mods_V10.html",
-            "server-config-file": "server.cfg",
+            "server-config-file": "main.cfg",
             "server-parameters" : "-autoInit -bandwidthAlg=2",
             
-            "num-headless": 2,
+            "num-headless": 3,
             
             "creator-dlc": {
                 "enable-creator": false,
@@ -33,14 +16,139 @@
                 "s.o.g.-prairie-fire": false,
                 "western-sahara": false,
                 "spearhead-1944": false
-            }
+            },
+            "servermods": [
+                ["FileXT", "2162811561"],
+                [ "Less Explody Aircraft", "2448528581" ]
+            ],
+            "maps": [
+                [ "CUP Terrains - Core", "583496184" ],
+                [ "Sumava", "2947655994" ],
+                [ "Kujari", "1726494027" ],
+                [ "Yulakia", "2950257727" ],
+                [ "New Esseker", "2712204589"],
+                [ "Saint Kapaulio", "939686262"],
+                [ "Lingor/Dingor Island", "718649903"],
+                [ "Napf Island A3", "1425442364"], [ "Napf Winter - Snowfall", "1969191445"],
+                [ "Island Panthera", "708278910" ]
+            ],
+            "unused": [
+                [ "ShackTac User Interface (DISCONTINUED)", "498740884" ]  
+            ],
+            "client-side-mods": [
+                
+                
+                
+                
+            ],
+            "mods": [
+                [ "CBA_A3", "450814997" ],
+                [ "Zeus Enhanced", "1779063631" ],
+                [ "ace", "463939057" ],
+                
+                [ "Enhanced Movement", "333310405" ],
+                [ "BWMod", "1200127537" ],
+                [ "Enhanced Movement Rework", "2034363662" ],
+                [ "Zeus Additions", "2387297579" ],
+                [ "Global Mobilization - Demo Vehicle", "1284731930" ],
+                [ "Hellenic Armed Forces Mod (HAFM) - Helicopters (discontinued)", "909320014" ],
+                [ "SFP- Bo 105", "1298165770" ],
+                [ "Advanced Towing", "639837898" ],
+                [ "BWA3 Add", "1326881314" ],
+                [ "RHSAFRF", "843425103" ],
+                [ "RHSUSAF", "843577117" ],
+                [ "RHSGREF", "843593391" ],
+                [ "RHSSAF", "843632231" ],
+                [ "RHSPKL", "1978754337" ],
+                
+                [ "RDS Civilian Pack", "612930542" ],
+                [ "PLA_Forces_mas", "515847017"],
+                [ "PLA Armored Vehicles Pack", "2578187969"],
+                
+                [ "Bundeswehr ReTex Pack (updated)", "2404571659"],
+                [ "[RHS] German Armed Forces - All in One", "2684121081"],
+                [ "TCGM_BikeBackpack", "2096950604"],
+                
+                [ "NIArms All In One (V14 Onwards)", "2595680138" ],
+                [ "NIArms All in One - ACE Compatibility", "3022233775" ],
+                [ "@NIArms All in One - RHS Compatibility", "1400574293" ],
+                [ "NIArms All in One - CUP Compatibility", "3022235542" ],
+                [ "Specialist Military Arms (SMA) Version 2.7.1", "699630614" ],
+                
+                [ "SMA-RHS Compat by ROTN", "1382333902" ],
+                [ "SMA NIArms RHS Compatibilities", "1388419835" ],
+                [ "SMA Compatibility Fix", "2264836821" ],
+                
+                [ "Tier One Weapons", "2268351256" ],
+                
+                
+                [ "GreenMag", "2352603233" ],
+                [ "GreenMag - RHS GREF COMPAT", "2543738110" ],
+                [ "GreenMag - RHS AFRF COMPAT", "2539590195" ],
+                [ "GreenMag - CUP Compatibility Addon", "2359802250" ],
+                [ "GreenMag - NIArms AiO (New) COMPAT", "2704773515" ],
+                
+                [ "CUP Weapons", "497660133" ],
+                [ "CUP Units", "497661914" ],
+                [ "CUP Vehicles", "541888371" ],
+                [ "RHS: CUP Weapons Compatibility All-In-One (FIXED)", "2730887493" ],
+                
+                [ "L3-GPNVG18 Panoramic Night Vision", "313041182" ],
+                
+                [ "JSRS SOUNDMOD", "861133494" ],
+                [ "JSRS SOUNDMOD - RHS USAF Mod Pack Sound Support", "1180533757" ],
+                [ "JSRS SOUNDMOD - RHS  AFRF Mod Pack Sound Support", "945476727" ],
+                [ "JSRS SOUNDMOD - RHS GREF Mod Pack Sound Support", "1180534892" ],
+                [ "JSRS SOUNDMOD - RHS SAF Mod Pack Support", "1486541773" ],
+                [ "Larger ACE Nightvision Border", "2290589496" ],
+                
+                [ "ACE Interaction Menu Expansion", "1376867375" ],
+                [ "Advance Aero Effects", "2309871702" ],
+                [ "DUI - Squad Radar", "1638341685" ],
+                
+                [ "A-10 Warthog", "787892271" ],
+                [ "FIR AWS(AirWeaponSystem)", "366425329" ],
+                [ "SPS BlackHornet PRS", "2457052493" ],
+                [ "Chemical Warfare PLUS", "3295358796" ],
+                [ "MapTools Remastered", "3032131959" ],
+                [ "Realistic Driving Terrains", "2363837768" ],
+                [ "Realistic_Driving_Terrains_RHS_AFRF_compat", "2404131877" ],
+                [ "Realistic_Driving_Terrains_RHS_USAF_compat", "2402988131" ],
+                [ "Realistic_Driving_Terrains_RHS_GREF_compat", "2404140256" ],
+                
+                [ "ACE Vehicle Medical", "1911374016" ],
+                [ "Weather Plus", "2735613231" ],
+                
+                [ "Death and Hit reactions", "2993442344" ],
+                [ "RHS Additions", "2807065718" ],
+                
+                [ "RKSL Studios - Attachments", "1661066023" ],
+                [ "Simplex Support Services", "1850026051"],
+                [ "Suppress", "825174634" ],
+                [ "Task Force Arrowhead Radio (BETA!!!)", "894678801" ],
+                [ "cTab", "871504836" ],
+                [ "cTab 1erGTD", "2262006564" ],
+                
+                
+                [ "3den Enhanced", "623475643" ],
+                [ "Antistasi Ultimate - Mod", "3020755032" ],
+                [ "Realistic Auto Pilots", "1439605692" ],
+                [ "Simple Armbands", "2778578325"],
+                [ "A3 Thermal Improvement", "2041057379" ],
+                [ "WBK Immersive Animations", "3165450999" ],
+                [ "WebKnight's Two Primary Weapons", "2976569274" ],
+                [ "ArmaFXP", "1105511475" ],
+                [ "Lushify", "2638049909" ],
+                [ "Better Inventory", "2791403093" ]
+                
+            ]
         },
-        "test-mods_v12.html": {
-            "mod-config-file":"Mods_V12.html",
-            "server-config-file": "server.cfg",
+        "old_antistasi": {
+            "mod-config-file":"Mods_V10.html",
+            "server-config-file": "main.cfg",
             "server-parameters" : "-autoInit -bandwidthAlg=2",
             
-            "num-headless": 2,
+            "num-headless": 3,
             
             "creator-dlc": {
                 "enable-creator": false,
@@ -49,7 +157,45 @@
                 "s.o.g.-prairie-fire": false,
                 "western-sahara": false,
                 "spearhead-1944": false
-            }
+            },
+            "servermods": [
+                [ "Less Explody Aircraft", "2448528581" ]
+            ],
+            "maps": [
+                
+            ],
+            "mods": [
+                [ "A3 Thermal Improvement", "2041057379" ],
+                [ "ace", "463939057" ],
+                [ "ACE Interaction Menu Expansion", "1376867375" ],
+                [ "Advanced Towing", "639837898" ],
+                [ "Antistasi Ultimate - Mod", "3020755032" ],
+                [ "ArmaFXP", "1105511475" ],
+                [ "Better Inventory", "2791403093" ],
+                [ "CBA_A3", "450814997" ],
+                [ "cTab", "871504836" ],
+                [ "CUP Weapons", "497660133" ],
+                [ "CUP Units", "497661914" ],
+                [ "CUP Vehicles", "541888371" ],
+                [ "Enhanced Map Ace Version", "2467590475" ],
+                [ "Enhanced Movement", "333310405" ],
+                [ "Enhanced Movement Rework", "2034363662" ],
+                [ "Improved Melee System", "2291129343" ],
+                [ "L3-GPNVG18 Panoramic Night Vision", "313041182" ],
+                [ "Larger ACE Nightvision Border", "2290589496" ],
+                [ "MapTools Remastered", "3032131959" ],
+                [ "Realistic Auto Pilots", "1439605692" ],
+                [ "ShackTac User Interface (DISCONTINUED)", "498740884" ],
+                [ "Simple Armbands", "2778578325"],
+                [ "Simple Fuelсan", "2407948224" ],
+                [ "SPS BlackHornet PRS", "2457052493" ],
+                [ "Suppress", "825174634" ],
+                [ "Task Force Arrowhead Radio (BETA!!!)", "894678801" ],
+                [ "WBK Immersive Animations", "3165450999" ],
+                [ "WebKnight's Two Primary Weapons", "2976569274" ],
+                [ "Zeus Additions", "2387297579" ],
+                [ "Zeus Enhanced", "1779063631" ]
+            ]
         }
     }
 }
