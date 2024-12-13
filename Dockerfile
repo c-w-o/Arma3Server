@@ -12,6 +12,7 @@ RUN apt-get update \
         net-tools \
         nano \
         curl \
+        iputils-ping \
         lib32stdc++6 \
         lib32gcc-s1 \
         libcurl4 \
