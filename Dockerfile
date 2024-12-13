@@ -11,6 +11,7 @@ RUN apt-get update \
         python3 \
         net-tools \
         nano \
+        curl \
         lib32stdc++6 \
         lib32gcc-s1 \
         libcurl4 \
