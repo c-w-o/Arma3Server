@@ -33,7 +33,7 @@ PARAM_FILE = FOLDER_CONFIG+os.sep+os.environ["PARAM_CONFIG"]
 PRESET_FILE=FOLDER_CONFIG+os.sep+os.environ["MODS_PRESET"]
 JSON_CONFIG = FOLDER_CONFIG+os.sep+"server.json"
 WORKSHOP_DIR="/tmp"+os.sep+"steamapps/workshop/content/107410"+os.sep
-
+USE_OCAP=False
 # 1. /arma3/* ordner von "außen" löschen
 # 2. /tmp/workshop/.../mods/xxx Ornder von this-server und common-server hierher linken
 #                                      fehlende order in common-server anlegen und linken
@@ -59,7 +59,18 @@ def logerror(what, silent=False):
         print("ERROR  : {}".format(what), flush=True)
 
 def mod_param(name, mods):
-    return ' -{}="{}" '.format(name, ";".join(mods))
+    _mods=[]
+    if USE_OCAP:
+        for m in mods:
+            if m.endswith(os.sep+"@ocap"):
+                # _mods.append(ARMA_ROOT+os.sep+m)
+                #_mods.append("/var/run/share/arma3/this-server/servermods/@ocap")
+                _mods.append(m)
+            else:
+                _mods.append(m)
+    else:
+        _mods=mods;
+    return ' -{}="{}" '.format(name, ";".join(_mods))
 
 def check_double_mods(mod_list):
     e=[]
@@ -67,7 +78,14 @@ def check_double_mods(mod_list):
     name=[]
     r=True
     for dispname, steamid in mod_list:
-        if not dispname in name and not steamid in id:
+        if steamid == "":
+            if not dispname in name:
+                e.append([dispname, None])
+                name.append(dispname)
+            else:
+                logerror("modname {} is used multiple times".format(dispname))
+                r=False
+        elif not dispname in name and not steamid in id:
             e.append([dispname, steamid])
             id.append(steamid)
             name.append(dispname)
@@ -107,7 +125,10 @@ def copy_key(moddir, keyfolder, steamid, dispname=""):
     if len(keys) > 0:
         for key in keys:
             if not os.path.isdir(key):
-                shutil.copy2(key, keyfolder+os.sep+steamid+"_"+os.path.basename(key))
+                if steamid is not None:
+                    shutil.copy2(key, keyfolder+os.sep+steamid+"_"+os.path.basename(key))
+                else:
+                    shutil.copy2(key, keyfolder+os.sep+dispname+"_"+os.path.basename(key))
     else:
         logwarning("Missing keys: {} ({}), {}: {}".format(moddir, dispname, os.path.join(moddir, "**/*.bikey"), keys))
         
@@ -130,6 +151,8 @@ def fix_folder_characters(path):
             fix_folder_characters(subdir + os.sep + dir.lower())
 
 def get_last_update(steamid):
+    if steamid is None:
+        return datetime.now().replace(year=1984)
     dt_1=datetime.now()
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
@@ -178,7 +201,7 @@ def startup_folder_clean_prepare():
     to_ignore=[]
 
     for item in os.listdir(ARMA_ROOT):
-        if item == "steamapps" or item == "battleye":
+        if item == "steamapps" or item == "battleye" or item == "OCAPLOG":
             continue
         if os.path.islink(item):
             to_unlink.append(item)
@@ -200,6 +223,7 @@ def startup_folder_clean_prepare():
 
     to_make=[]
     to_link=[]
+    to_keys=[]
     to_make.append(FOLDER_KEYS)
     to_make.append(FOLDER_MODS)
     to_make.append(FOLDER_SERVERMODS)
@@ -209,6 +233,15 @@ def startup_folder_clean_prepare():
     to_link.append([THIS_SHARE_ARMA_ROOT+"/userconfig", ARMA_ROOT+"/userconfig"])
     to_link.append([THIS_SHARE_ARMA_ROOT+"/logs", ARMA_ROOT+"/logs"])
     to_link.append([COMMON_SHARE_ARMA_ROOT+"/basic.cfg", ARMA_ROOT+"/basic.cfg"])
+    
+    
+    
+    for item in os.listdir(COMMON_SHARE_ARMA_ROOT+"/dlcs"):
+        src=os.path.join(COMMON_SHARE_ARMA_ROOT+"/dlcs", item)
+        dst=ARMA_ROOT+os.sep+item
+        to_link.append([src, dst])
+        #to_keys.append([dst,item])
+    
     if os.path.exists(THIS_SHARE_ARMA_ROOT+"/mpmissions"):
         to_link.append([THIS_SHARE_ARMA_ROOT+"/mpmissions", ARMA_ROOT+"/mpmissions"])
     
@@ -218,6 +251,9 @@ def startup_folder_clean_prepare():
     logdebug("linking {}".format(to_link))
     for item_from, item_to in to_link:
         link_it(item_from, item_to, silent=True)
+        
+    #for item,id in to_keys:
+    #    copy_key(item, FOLDER_KEYS, id, id)
 
 def parse_json_config(): # bool
     global SERVER_BASE
@@ -228,6 +264,7 @@ def parse_json_config(): # bool
     global NEW_MOD_LIST
     global NEW_MAPS_LIST
     global CLIENT_MOD_LIST
+    global USE_OCAP
 
     jconfig=None
     if os.path.exists(JSON_CONFIG):
@@ -261,6 +298,8 @@ def parse_json_config(): # bool
                     lognotice("overwrite BASIC_CONFIG with {}".format(active_jc["server-base-file"]))
                     os.environ["BASIC_CONFIG"] = active_jc["server-base-file"]
                     SERVER_BASE = FOLDER_CONFIG+os.sep+os.environ["BASIC_CONFIG"]
+                USE_OCAP = active_jc.get("use-ocap", False)
+                lognotice("use of OCAP: {}".format(USE_OCAP))
 
                 modresult=True
                 if "servermods" in active_jc:
@@ -339,7 +378,7 @@ def parse_json_config(): # bool
     return True
 
 def link_external_share_with_workshop(): # bool
-    
+    global NEW_SRVMOD_LIST
     link_servermods=[]
     link_mods=[]
     link_maps=[]
@@ -348,19 +387,36 @@ def link_external_share_with_workshop(): # bool
     result=True
 
     srvmod_path=THIS_SHARE_ARMA_ROOT+os.sep+"servermods"+os.sep
-    lognotice("workshop - servermods: {}".format(NEW_SRVMOD_LIST))
-    for dispname, steamid in NEW_SRVMOD_LIST:
-        if not os.path.exists(srvmod_path+steamid):
-            os.makedirs(srvmod_path+steamid)
-            with open(srvmod_path+steamid+"_@"+dispname, "w") as f:
-                f.write("")
-        link_servermods.append([dispname, srvmod_path+steamid, WORKSHOP_DIR+os.sep+steamid])
-        workshop_download.append([dispname, steamid])
-
     priv_mod_path=THIS_SHARE_ARMA_ROOT+os.sep+"mods"+os.sep
     pub_mod_path=COMMON_SHARE_ARMA_ROOT+os.sep+"mods"+os.sep
+    
+    if USE_OCAP:
+        NEW_SRVMOD_LIST.append(["ocap", None])
+        
+    lognotice("workshop - servermods: {}".format(NEW_SRVMOD_LIST))
+    for dispname, steamid in NEW_SRVMOD_LIST:
+        if steamid is not None:
+            if not os.path.exists(srvmod_path+steamid):
+                os.makedirs(srvmod_path+steamid)
+                with open(srvmod_path+steamid+"_@"+dispname, "w") as f:
+                    f.write("")
+            link_servermods.append([dispname, srvmod_path+steamid, WORKSHOP_DIR+os.sep+steamid])
+            workshop_download.append([dispname, steamid])
+        else:
+            lognotice("mod {} is not from steam".format(dispname))
+            lognotice("check srvmod_path: {}".format(srvmod_path+"@"+dispname))
+            lognotice("check pub_mod_path: {}".format(pub_mod_path+"@"+dispname))
+            
+            if not os.path.exists(srvmod_path+"@"+dispname):
+                if os.path.exists(priv_mod_path+"@"+dispname):
+                    link_servermods.append([dispname, priv_mod_path+"@"+dispname, srvmod_path+"@"+dispname])
+                elif os.path.exists(pub_mod_path+"@"+dispname):
+                    link_servermods.append([dispname, pub_mod_path+"@"+dispname, srvmod_path+"@"+dispname])
+
     lognotice("workshop - mods: {}".format(NEW_MOD_LIST))
     for dispname, steamid in NEW_MOD_LIST:
+        if steamid is None:
+            continue
         if os.path.exists(priv_mod_path+steamid):
             link_mods.append([dispname, priv_mod_path+steamid, WORKSHOP_DIR+os.sep+steamid])
         elif not os.path.exists(pub_mod_path+steamid):
@@ -373,6 +429,8 @@ def link_external_share_with_workshop(): # bool
         workshop_download.append([dispname, steamid])
     
     for dispname, steamid in CLIENT_MOD_LIST:
+        if steamid is None:
+            continue
         if os.path.exists(priv_mod_path+steamid):
             link_mods.append([dispname, priv_mod_path+steamid, WORKSHOP_DIR+os.sep+steamid])
         elif not os.path.exists(pub_mod_path+steamid):
@@ -387,6 +445,8 @@ def link_external_share_with_workshop(): # bool
     map_path=COMMON_SHARE_ARMA_ROOT+os.sep+"maps"+os.sep
     lognotice("workshop - maps: {}".format(NEW_MAPS_LIST))
     for dispname, steamid in NEW_MAPS_LIST:
+        if steamid is None:
+            continue
         if not os.path.exists(map_path+steamid):
             os.makedirs(map_path+steamid)
             with open(map_path+steamid+"_@"+dispname, "w") as f:
@@ -410,6 +470,8 @@ def link_external_share_with_workshop(): # bool
     # we'll now check for updates or if folder is empty and download if necessary
 
     for dispname, steamid in workshop_download:
+        if steamid is None:
+            continue
         up_dt=get_last_update(steamid)
         act_dt=datetime.now().replace(year=1984)
         datecfg=WORKSHOP_DIR+os.sep+steamid+os.sep+"srvdon_info.cfg"
@@ -433,6 +495,8 @@ def link_external_share_with_workshop(): # bool
     # now we have all mods with empty folder or with an update
     logdebug("downloading or updating mods: {}".format(workshop_download_t0))
     for dispname, steamid, file_dt, remote_dt in workshop_download_t0:
+        if steamid is None:
+            continue
         retry_count=12
         returncode=-1
         while returncode!=0 and retry_count > 0:
@@ -468,23 +532,33 @@ def link_external_share_with_workshop(): # bool
     # as last step we have to sanitize the folder names, extract all server keys and link those with
     # a proper name to the arma3 folder
     for dispname, steamid in workshop_download:
-        fix_folder_characters(WORKSHOP_DIR+os.sep+steamid)
-        copy_key(WORKSHOP_DIR+os.sep+steamid, FOLDER_KEYS, steamid, dispname)
+        if steamid is None:
+            continue
+        else:
+            fix_folder_characters(WORKSHOP_DIR+os.sep+steamid)
+            copy_key(WORKSHOP_DIR+os.sep+steamid, FOLDER_KEYS, steamid, dispname)
 
     final_links=[]
     final_mods=[]
     final_srvmods=[]
     for dispname, steamid in NEW_SRVMOD_LIST:
         san_dispname="@"+dispname
-        final_links.append([WORKSHOP_DIR+os.sep+steamid, FOLDER_SERVERMODS+os.sep+san_dispname])
+        if steamid is not None:
+            final_links.append([WORKSHOP_DIR+os.sep+steamid, FOLDER_SERVERMODS+os.sep+san_dispname])
+        else:
+            final_links.append([THIS_SHARE_ARMA_ROOT+os.sep+"servermods/"+san_dispname, FOLDER_SERVERMODS+os.sep+san_dispname])
         final_srvmods.append("servermods/"+san_dispname)
 
     for dispname, steamid in NEW_MOD_LIST:
+        if steamid is None:
+            continue
         san_dispname="@"+dispname
         final_links.append([WORKSHOP_DIR+os.sep+steamid, FOLDER_MODS+os.sep+san_dispname])
         final_mods.append("mods/"+san_dispname)
 
     for dispname, steamid in NEW_MAPS_LIST:
+        if steamid is None:
+            continue
         san_dispname="@"+dispname
         final_links.append([WORKSHOP_DIR+os.sep+steamid, FOLDER_MODS+os.sep+san_dispname])
         final_mods.append("mods/"+san_dispname)
